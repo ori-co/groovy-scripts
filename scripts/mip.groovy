@@ -1,7 +1,7 @@
 import org.orbisgis.sif.*
 import org.orbisgis.sif.multiInputPanel.*
 
-mip = new MultiInputPanel()
+mip = new MultiInputPanel("A new GUI")
 mip.addInput("1", "CheckBox", new CheckBoxChoice(false))
 mip.addInput("2", "ComboBox", new ComboBoxChoice("ComboChoice1", "ComboChoice2"))
 mip.addInput("3", "List", new ListChoice("ListChoice1", "ListChoice2", "ListChoice3"))
