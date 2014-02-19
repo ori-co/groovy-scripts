@@ -14,15 +14,23 @@ import com.vividsolutions.jts.geom.Envelope;
  * A panel that manages map positionning
  */
 class MyPanel implements EditorDockable {
+    /**Logger is a class to log message to user */	
     Logger LOGGER = Logger.getLogger("gui."+MyPanel.class);
+    /** Hold properties of the GUI panel like the title */
     DockingPanelParameters dockingParameters = new DockingPanelParameters()
+    /** Panel SWING component */
     JPanel panel
+    /** A Groovy class that help to build SWING components */
     SwingBuilder swing = new SwingBuilder()
+    /** The current loaded map in OrbisGIS */
     MapContext mapContext
+    /** SWING component, List of GeoMark */
     JList geoMarkList    
+    /** Internal array of GeoMark name */
     List listData = []
+    /** Array of geomark envelope (minX,maxX,minY,maxY) */
     Map envList = new HashMap() 
-    
+    /** Constructor*/
     MyPanel() {
     	   EditorManager editorManager = Services.getService(EditorManager.class)
     	   mapContext = MapElement.fetchFirstMapElement(editorManager).getMapContext();
@@ -40,16 +48,22 @@ class MyPanel implements EditorDockable {
             }
         }
     }
+    /** The user click on Zoom to GeoMark */
     void goToGeoMark() {
+    	// Read selected entry in the SWING component
     	String key = geoMarkList.getSelectedValue()
     	if(key!=null && !key.isEmpty()) {
+    		// Change bounding box, extract Envelope instance from the array this.envList
 	    	mapContext.setBoundingBox(envList.get(key))
     	}
     }
+    /** The user click on Add GeoMark*/
     void addGeoMark() {
     	 try {
     	 	Envelope env = mapContext.getBoundingBox()
+    	 	// If there is an envelope
     	 	if(env != null) {
+    	 		// Add an item in the list model
 		 	listData.add(env.toString())
      	 	geoMarkList.listData = listData
      	 	envList.put(env.toString(), env)
@@ -58,44 +72,48 @@ class MyPanel implements EditorDockable {
     	 	LOGGER.error(ex.getLocalizedMessage(), ex)
     	 }
     }
-    
+    /**The user click on Remove panel*/
     void remove() {
+    	   // Remove the panel from OrbisGIS
         EditorManager editorManager = Services.getService(EditorManager.class)
         editorManager.removeEditor(this)
     }
-
+    
+    @Override
     DockingPanelParameters getDockingParameters() {
         return dockingParameters
     }
 
+    @Override
     JComponent getComponent() {
         return panel
     }
 
+    /** This panel handle MapElement */
+    @Override
     boolean match(org.orbisgis.viewapi.edition.EditableElement editableElement) {
         return editableElement instanceof MapElement
     }
 
+    /** We do not store map element */
+    @Override
     EditableElement getEditableElement() {
         return null
     }
-
+	/** The user want to load another Map */
+    @Override
     void setEditableElement(EditableElement editableElement) {
 		if(editableElement instanceof MapElement) {
 			mapContext = editableElement.getMapContext()
 		}
     }
 }
-
+// Main stuff
+// Get the Panel manager
 EditorManager editorManager = Services.getService(EditorManager.class)
+// Construct our panel
 EditorDockable panel = new MyPanel()
+// Tell the panel manager to loads our panel
 editorManager.addEditor(panel)
-
-
-
-
-
-
-
 
 
