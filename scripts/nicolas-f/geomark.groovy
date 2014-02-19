@@ -39,7 +39,8 @@ class MyPanel implements EditorDockable {
         dockingParameters.setDockActions(
                 [swing.action(closure: { remove() }, smallIcon: OrbisGISIcon.getIcon("remove"), name: "Remove panel"),
                  swing.action(closure: { addGeoMark() }, smallIcon: OrbisGISIcon.getIcon("add"), name: "Add GeoMark"),
-                 swing.action(closure: { goToGeoMark() }, smallIcon: OrbisGISIcon.getIcon("zoom"), name: "Zoom to GeoMark")
+                 swing.action(closure: { goToGeoMark() }, smallIcon: OrbisGISIcon.getIcon("zoom"), name: "Zoom to GeoMark"),
+                 swing.action(closure: { deleteGeoMark() }, smallIcon: OrbisGISIcon.getIcon("delete"), name: "Delete GeoMark")
                 ])
         panel = swing.panel() {
             borderLayout()
@@ -71,6 +72,11 @@ class MyPanel implements EditorDockable {
     	 } catch(Exception ex) {
     	 	LOGGER.error(ex.getLocalizedMessage(), ex)
     	 }
+    }
+    void deleteGeoMark() {
+            listData.remove(geoMarkList.getSelectedValue())
+            envList.remove(geoMarkList.getSelectedValue())
+            geoMarkList.listData = listData
     }
     /**The user click on Remove panel*/
     void remove() {
