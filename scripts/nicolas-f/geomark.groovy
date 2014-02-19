@@ -75,15 +75,14 @@ class MyPanel implements EditorDockable {
     void addGeoMark() {
         try {
             Envelope env = mapContext.getBoundingBox()
-                if(env != null) {
-                    String label = env.toString()
-                        Object pane = swing.optionPane(message : "Set the GeoMark name", wantsInput: true)
-                        Object dialog = pane.createDialog(panel, "Choose GeoMark name")
-                        dialog.show()
-                        label = pane.inputValue
-                        listData.add(label)
-                        geoMarkList.listData = listData
-                        envList.put(label, env)
+                if (env != null) {
+                    def label = env.toString()
+                    def pane = swing.optionPane(message : "Set the GeoMark name", wantsInput: true)
+                    pane.createDialog(panel, "Choose GeoMark name").show()
+                    if (!pane.inputValue.isEmpty()) { label = pane.inputValue }
+                    listData.add(label)
+                    geoMarkList.listData = listData
+                    envList.put(label, env)
                 }
         } catch(Exception ex) {
             LOGGER.error(ex.getLocalizedMessage(), ex)
