@@ -32,8 +32,8 @@ class MyPanel implements EditorDockable {
     Map envList = new HashMap() 
     /** Constructor*/
     MyPanel() {
-    	   EditorManager editorManager = Services.getService(EditorManager.class)
-    	   mapContext = MapElement.fetchFirstMapElement(editorManager).getMapContext();
+           EditorManager editorManager = Services.getService(EditorManager.class)
+           mapContext = MapElement.fetchFirstMapElement(editorManager).getMapContext();
         dockingParameters.setName("geomark")
         dockingParameters.setTitle("Geomark")
         dockingParameters.setDockActions(
@@ -58,25 +58,29 @@ class MyPanel implements EditorDockable {
 	    	mapContext.setBoundingBox(envList.get(key))
     	}
     }
+    /** The user click on Delete GeoMark*/
+    void deleteGeoMark() {
+        listData.remove(geoMarkList.getSelectedValue())
+        envList.remove(geoMarkList.getSelectedValue())
+        geoMarkList.listData = listData
+    }
     /** The user click on Add GeoMark*/
     void addGeoMark() {
-    	 try {
-    	 	Envelope env = mapContext.getBoundingBox()
-    	 	// If there is an envelope
-    	 	if(env != null) {
-    	 		// Add an item in the list model
-		 	listData.add(env.toString())
-     	 	geoMarkList.listData = listData
-     	 	envList.put(env.toString(), env)
-    	 	}
-    	 } catch(Exception ex) {
-    	 	LOGGER.error(ex.getLocalizedMessage(), ex)
-    	 }
-    }
-    void deleteGeoMark() {
-            listData.remove(geoMarkList.getSelectedValue())
-            envList.remove(geoMarkList.getSelectedValue())
-            geoMarkList.listData = listData
+         try {
+             Envelope env = mapContext.getBoundingBox()
+             if(env != null) {
+                 String label = env.toString()
+                 Object pane = swing.optionPane(message : "Set the GeoMark name", wantsInput: true)
+                 Object dialog = pane.createDialog(panel, "Choose GeoMark name")
+                 dialog.show()
+                 label = pane.inputValue
+             listData.add(label)
+              geoMarkList.listData = listData
+              envList.put(label, env)
+             }
+         } catch(Exception ex) {
+             LOGGER.error(ex.getLocalizedMessage(), ex)
+         }
     }
     /**The user click on Remove panel*/
     void remove() {
@@ -106,12 +110,13 @@ class MyPanel implements EditorDockable {
     EditableElement getEditableElement() {
         return null
     }
+
 	/** The user want to load another Map */
     @Override
     void setEditableElement(EditableElement editableElement) {
-		if(editableElement instanceof MapElement) {
-			mapContext = editableElement.getMapContext()
-		}
+        if(editableElement instanceof MapElement) {
+            mapContext = editableElement.getMapContext()
+        }
     }
 }
 // Main stuff
@@ -121,5 +126,3 @@ EditorManager editorManager = Services.getService(EditorManager.class)
 EditorDockable panel = new MyPanel()
 // Tell the panel manager to loads our panel
 editorManager.addEditor(panel)
-
-
